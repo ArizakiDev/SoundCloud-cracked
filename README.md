@@ -1,7 +1,7 @@
 # SoundCloud-cracked by Arizaki
 Removed Ads + Discord Rpc. All by me
 
-#French
+# French
 
 | Version | Description |
 |---------|-------------|
