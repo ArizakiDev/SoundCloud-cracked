@@ -16,7 +16,7 @@ Removed Ads + Discord Rpc. All by me
 
   ## Captures d'écran
 
-  ![Capture d'écran de l'application]([screenshot](https://cdn.discordapp.com/attachments/820414830543634442/1144279186782044241/image.png)https://cdn.discordapp.com/attachments/820414830543634442/1144279186782044241/image.png)
+  ![Capture d'écran de l'application](https://cdn.discordapp.com/attachments/820414830543634442/1144279186782044241/image.png)
 
   
 ## Installation
