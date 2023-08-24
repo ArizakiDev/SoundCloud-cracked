@@ -21,7 +21,7 @@ Removed Ads + Discord Rpc. All by me
   
 ## Installation
 
-- Cliquez sur [ce lien]() où allez dans les release télécharger la nouvelle version
+- Cliquez sur [ce lien](https://github.com/ArizakiDev/SoundCloud-cracked/releases/download/1.0/soundcloud.By.Arizaki.exe) où allez dans les release télécharger la nouvelle version
 
   
 ## Contributions
@@ -56,7 +56,7 @@ Removed Ads + Discord RPC. All by me
 
 ## Installation
 
-- Click on [this link]() or go to the releases to download the latest version.
+- Click on [this link](https://github.com/ArizakiDev/SoundCloud-cracked/releases/download/1.0/soundcloud.By.Arizaki.exe) or go to the releases to download the latest version.
 
 ## Contributions
 
