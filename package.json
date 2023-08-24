@@ -1,0 +1,19 @@
+{
+  "name": "Ads block for soundcloud",
+  "productName": "Ads block for soundcloud",
+  "description": "My Electron application description",
+  "keywords": [],
+  "main": "./main.js",
+  "version": "1.0.0",
+  "author": "Arizaki",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "discord-rpc": "4.0.1",
+    "electron-packager": "17.1.1"
+  },
+  "devDependencies": {
+    "electron": "23.2.0"
+  }
+}
