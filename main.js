@@ -1,30 +1,29 @@
-const { app, BrowserWindow } = require('electron'); // Electron to create the window
-const DiscordRPC = require('discord-rpc'); // Discord Rich Presence API
-const rpc = new DiscordRPC.Client({ transport: 'ipc' }); // Initialize new client
-const clientId = '1090770350251458592'; // Discord application client ID
+const { app, BrowserWindow } = require('electron');
+const DiscordRPC = require('discord-rpc');
+const rpc = new DiscordRPC.Client({ transport: 'ipc' });
+const clientId = '1090770350251458592';
 
-rpc.login({ clientId }).catch(console.error);
+rpc.login({ clientId })
 
 let mainWindow;
 
 function shortenString(str) {
-  // Check if the string is longer than 128 characters
+
   if (str.length > 128) {
-    // If so, truncate it to 128 characters and append '...' to the end
+
     return str.substring(0, 128) + '...';
   }
-  // Otherwise, return the original string
+
   return str;
 }
 
 async function createWindow() {
-  let displayWhenIdling = false; // Whether to display a status message when music is paused
+  let displayWhenIdling = false;
 
-  // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 720,
-    icon: __dirname + '/assets/ico/soundcloud.ico',
+    icon: __dirname + 'soundcloud.ico',
     webPreferences: {
       nodeIntegration: false
     }
@@ -32,39 +31,32 @@ async function createWindow() {
 
    mainWindow.maximize();
 
-  // Load the SoundCloud website
   mainWindow.loadURL('https://soundcloud.com/');
 
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools();
+mainWindow.webContents.openDevTools();
 
 
   
-  // Wait for the page to fully load
-  mainWindow.webContents.on('did-finish-load', async () => {
-
-    await mainWindow.webContents.executeJavaScript(`
-    setInterval(function () {
-      var source = document.getElementsByTagName('html')[0].innerHTML;
-      var found = source.search("Advertisement");
-
-      if (found != -1) {
-        window.location.reload(true);
-      }
-    }, 1000);
-  `);
-
-    // Check if music is playing every 10 seconds
+  mainWindow.webContents.session.webRequest.onBeforeRequest({ urls: [
+    "https://cont-1.p-cdn.us/public/full-128kbps-mp3/*",
+    "https://cont-1.p-cdn.us/images/public/devicead/*"
+] }, (details, callback) => {
+    if (details.url.startsWith("https://cont-1.p-cdn.us/public/full-128kbps-mp3/") ||
+        details.url.startsWith("https://cont-1.p-cdn.us/images/public/devicead/")) {
+        callback({ cancel: true });
+    } else {
+        callback({ cancel: false });
+    }
+  
     setInterval(async () => {
 
-      // Check if music is playing
       const isPlaying = await mainWindow.webContents.executeJavaScript(
         `document.querySelector('.playControls__play').classList.contains('playing')`
       );
 
       if (isPlaying) {
 
-        // Retrieve the track title using a script injected into the page
         const trackInfo = await mainWindow.webContents.executeJavaScript(`
         new Promise(resolve => {
           const titleEl = document.querySelector('.playbackSoundBadge__titleLink');
@@ -77,7 +69,6 @@ async function createWindow() {
         });
       `);
 
-        // Retrieve the URL of the song's artwork image
         const artworkUrl = await mainWindow.webContents.executeJavaScript(`
         new Promise(resolve => {
           const artworkEl = document.querySelector('.playbackSoundBadge__avatar .image__lightOutline span');
@@ -90,7 +81,6 @@ async function createWindow() {
         });
       `);
 
-        // Update rich presence with the currently playing song
         rpc.setActivity({
           details: shortenString(trackInfo.title.replace(/\n.*/s, '').replace("Current track:", "")),
           state: `Par ${shortenString(trackInfo.author)}`,
@@ -104,7 +94,6 @@ async function createWindow() {
       else {
         if (displayWhenIdling) {
 
-          // Update rich presence when music is paused
           rpc.setActivity({
             details: 'écoute sur Soundcloud',
             state: 'En pause',
@@ -116,27 +105,23 @@ async function createWindow() {
           });
         }
       }
-    }, 100);
+    }, 1000);
 
   });
 
-  // Emitted when the window is closed.
   mainWindow.on('closed', function () {
     mainWindow = null;
   });
 }
 
-// When Electron has finished initializing, create the main window
 app.on('ready', createWindow);
 
-// Quit the app when all windows are closed, unless running on macOS (where it's typical to leave apps running)
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
-// When the app is activated, create the main window if it doesn't already exist
 app.on('activate', function () {
   if (mainWindow === null) {
     createWindow();
