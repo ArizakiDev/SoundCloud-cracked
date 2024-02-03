@@ -5,7 +5,7 @@ Removed Ads + Discord Rpc. All by me
 
 | Version | Description |
 |---------|-------------|
-| 1.0   | Ajout: Pub retirée, discord rpc |
+| 1.1   | Ajout: Pub retirée |
 
 
 ## Description
@@ -42,7 +42,7 @@ Removed Ads + Discord RPC. All by me
 
 | Version | Description |
 |---------|-------------|
-| 1.0     | Added: Ads removed, Discord RPC |
+| 1.1     | Added: Ads removed |
 
 ## Description
 
