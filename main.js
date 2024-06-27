@@ -1,19 +1,16 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu, shell } = require('electron');
 const DiscordRPC = require('discord-rpc');
 const rpc = new DiscordRPC.Client({ transport: 'ipc' });
 const clientId = '1090770350251458592';
 
-rpc.login({ clientId })
+rpc.login({ clientId });
 
 let mainWindow;
 
 function shortenString(str) {
-
   if (str.length > 128) {
-
     return str.substring(0, 128) + '...';
   }
-
   return str;
 }
 
@@ -28,36 +25,44 @@ async function createWindow() {
       nodeIntegration: false
     }
   });
-
-   mainWindow.maximize();
-
+  mainWindow.maximize();
   mainWindow.loadURL('https://soundcloud.com/');
-
-  // Open the DevTools.
-mainWindow.webContents.openDevTools();
-
-
-  
-  mainWindow.webContents.session.webRequest.onBeforeRequest({ urls: [
-    "https://cont-1.p-cdn.us/public/full-128kbps-mp3/*",
-    "https://cont-1.p-cdn.us/images/public/devicead/*"
-] }, (details, callback) => {
-    if (details.url.startsWith("https://cont-1.p-cdn.us/public/full-128kbps-mp3/") ||
-        details.url.startsWith("https://cont-1.p-cdn.us/images/public/devicead/")) {
-        callback({ cancel: true });
+  mainWindow.webContents.openDevTools();
+  mainWindow.webContents.session.webRequest.onBeforeRequest({ urls: ["*://*/*"] }, (details, callback) => {
+    const adPatterns = [
+      /.*ads.*/,
+      /.*advert.*/,
+      /.*doubleclick.net.*/,
+      /.*googlesyndication.com.*/,
+      /.*adservice.google.*/,
+      /.*pagead.*/,
+      /.*ad-delivery.*/,
+      /.*exponential.com.*/,
+      /.*amazon-adsystem.com.*/,
+      /.*adnxs.com.*/,
+      /.*taboola.com.*/,
+      /.*outbrain.com.*/,
+      /.*sponsor.*/,
+      /.*adserver.*/,
+      /.*banner.*/,
+      /.*banners.*/,
+      /.*promotions.*/
+    ];
+    
+    if (adPatterns.some(pattern => pattern.test(details.url))) {
+      callback({ cancel: true });
     } else {
-        callback({ cancel: false });
+      callback({ cancel: false });
     }
-  
-    setInterval(async () => {
+  });
 
-      const isPlaying = await mainWindow.webContents.executeJavaScript(
-        `document.querySelector('.playControls__play').classList.contains('playing')`
-      );
+  setInterval(async () => {
+    const isPlaying = await mainWindow.webContents.executeJavaScript(
+      `document.querySelector('.playControls__play').classList.contains('playing')`
+    );
 
-      if (isPlaying) {
-
-        const trackInfo = await mainWindow.webContents.executeJavaScript(`
+    if (isPlaying) {
+      const trackInfo = await mainWindow.webContents.executeJavaScript(`
         new Promise(resolve => {
           const titleEl = document.querySelector('.playbackSoundBadge__titleLink');
           const authorEl = document.querySelector('.playbackSoundBadge__lightLink');
@@ -69,7 +74,7 @@ mainWindow.webContents.openDevTools();
         });
       `);
 
-        const artworkUrl = await mainWindow.webContents.executeJavaScript(`
+      const artworkUrl = await mainWindow.webContents.executeJavaScript(`
         new Promise(resolve => {
           const artworkEl = document.querySelector('.playbackSoundBadge__avatar .image__lightOutline span');
           if (artworkEl) {
@@ -81,37 +86,76 @@ mainWindow.webContents.openDevTools();
         });
       `);
 
+      rpc.setActivity({
+        details: shortenString(trackInfo.title.replace(/\n.*/s, '').replace("Current track:", "")),
+        state: `Par ${shortenString(trackInfo.author)}`,
+        largeImageKey: artworkUrl.replace("50x50.", "500x500."),
+        largeImageText: 'by Arizaki',
+        smallImageKey: 'soundcloud-logo',
+        smallImageText: 'Soundcloud',
+        instance: false,
+      });
+    } else {
+      if (displayWhenIdling) {
         rpc.setActivity({
-          details: shortenString(trackInfo.title.replace(/\n.*/s, '').replace("Current track:", "")),
-          state: `Par ${shortenString(trackInfo.author)}`,
-          largeImageKey: artworkUrl.replace("50x50.", "500x500."),
+          details: 'écoute sur Soundcloud',
+          state: 'En pause',
+          largeImageKey: 'idling',
           largeImageText: 'by Arizaki',
           smallImageKey: 'soundcloud-logo',
-          smallImageText: 'Soundcloud',
+          smallImageText: '',
           instance: false,
         });
       }
-      else {
-        if (displayWhenIdling) {
-
-          rpc.setActivity({
-            details: 'écoute sur Soundcloud',
-            state: 'En pause',
-            largeImageKey: 'idling',
-            largeImageText: 'by Arizaki',
-            smallImageKey: 'soundcloud-logo',
-            smallImageText: '',
-            instance: false,
-          });
-        }
-      }
-    }, 1000);
-
-  });
+    }
+  }, 1000);
 
   mainWindow.on('closed', function () {
     mainWindow = null;
   });
+
+  createMenu();
+}
+
+function createMenu() {
+  const SoundCloud = [
+    {
+      label: 'SoundCloud Crack v1.2',
+      submenu: [
+        {
+          label: 'Home',
+          click: () => {
+            mainWindow.loadURL('https://soundcloud.com/');
+          }
+        },
+        {
+          label: 'Github',
+          click: () => {
+            shell.openExternal('https://github.com/ArizakiDev/SoundCloud-cracked');
+          }
+        },
+        {
+          label: 'Reload',
+          role: 'reload'
+        },
+        {
+          label: 'Quit',
+          click: () => {
+            app.quit();
+          }
+        }
+      ]
+    },
+    {
+      label: 'DevTool',
+      submenu: [
+        { label: 'Toggle Developer Tools', role: 'toggleDevTools' }
+      ]
+    }
+  ];
+
+  const menu = Menu.buildFromTemplate(SoundCloud);
+  Menu.setApplicationMenu(menu);
 }
 
 app.on('ready', createWindow);
@@ -127,4 +171,3 @@ app.on('activate', function () {
     createWindow();
   }
 });
-
