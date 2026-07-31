@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎵 SoundCloud-cracked
+# 🎵 SoundCloud-Rework
 
 <img src="https://imgur.com/LORLuzf.png" alt="Bannière de l'application" width="300"/>
 
