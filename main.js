@@ -541,7 +541,7 @@ async function updateDiscordRPC() {
           const playButton = document.querySelector('.playControls__play');
           const isPlaying = playButton && playButton.classList.contains('playing');
           
-          const titleEl = document.querySelector('.playbackSoundBadge__titleLink');
+          const titleEl = document.querySelector('.playbackSoundBadge__titleLink span:nth-child(2)');
           const artistEl = document.querySelector('.playbackSoundBadge__lightLink');
           const artworkEl = document.querySelector('.playbackSoundBadge__avatar .image__lightOutline span');
           
@@ -690,6 +690,19 @@ async function createWindow() {
   
   mainWindow.maximize();
   mainWindow.loadURL('https://soundcloud.com/');
+    
+
+  // remove visual ads
+  const cssPath = path.join(__dirname, 'custom.css');
+  const customCSS = fs.readFileSync(cssPath, 'utf8');
+  mainWindow.webContents.on('did-frame-finish-load', () => {
+    mainWindow.webContents.insertCSS(customCSS).then(() => {
+      console.log('CSS injected ');
+    }).catch(err => {
+      console.error('CSS injection error:', err);
+    });
+  });
+
   
   mainWindow.webContents.session.webRequest.onBeforeRequest({ urls: ["*://*/*"] }, (details, callback) => {
     const adPatterns = [

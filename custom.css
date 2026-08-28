@@ -1,0 +1,46 @@
+.ouxtlr0 {
+    display: none;
+}
+
+.creatorBadge__custom {
+    display: none;
+}
+
+.creatorSubscriptionsButton {
+    display: none;
+}
+
+.soundTitle__usernameHeroContainer {
+    display: none;
+}
+
+.velvetCakeIframe {
+    display: none;
+}
+
+
+/* Ajout de ma part */
+
+.header__upsellWrapper {
+	display: none !important;
+}
+
+.mobileApps {
+    display: none !important;
+}
+
+.l-product-banners {
+    display: none;
+}
+
+.m-promotion {
+    display: none;
+}
+
+.webiEmbeddedModule {
+	display: none !important;
+}
+
+.profileMenu__premium {
+    display: none !important;
+}
